@@ -9,7 +9,7 @@ const DashboardLayout = () => {
   return (
     <section className="w-full">
       <div className="w-full flex">
-        <aside className="w-full min-h-screen max-w-64">
+        {/* <aside className="w-full min-h-screen max-w-64">
           <Card className="">
             <CardHeader>
               <div className="w-full flex justify-center items-center py-5 border-b-2">
@@ -26,7 +26,7 @@ const DashboardLayout = () => {
 
             </CardContent>
           </Card>
-        </aside>
+        </aside> */}
         <div className="w-full">
           <Header />
           <Outlet />
