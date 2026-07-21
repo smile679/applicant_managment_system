@@ -8,16 +8,28 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { loginUser } from "../../api/auth";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const LoginUser = () => {
   const [ formData, setFormData] = useState({ email: "admin@infnova.tech", password: "InternChallenge2026!" });
   const [ isLoading, setIsLoading ] = useState(false);
   const [ error, setError ] = useState("");
   const navigate = useNavigate()
+  const { login } = useAuth();
+
+  const [ searchParams, setSearchParams ] = useSearchParams();
+
+  useEffect(()=>{
+     if (searchParams.get("expired") === "true") {
+       toast.error("token expired!", {
+         position: "top-right",
+       });
+     }
+  },[searchParams])
 
   const handleSubmit = async(e) => {
     e.preventDefault();
@@ -26,18 +38,17 @@ const LoginUser = () => {
        setIsLoading(true);
        const res = await loginUser(formData);
        console.log(res.data.user);
-       if(res?.data){
-          sessionStorage.setItem("token", res.data.accessToken);
-          sessionStorage.setItem("user", JSON.stringify(res.data.user));
-       }
 
        if (res.data.user) {
+          login(res.data.accessToken, res.data.user);
+
           toast.success("user successfully login..", {
            position: "top-right",
          });
         
-         navigate("/dashboard")
+         navigate("/dashboard");
        }
+
      } catch (error) {
        console.error(error);
        setError(error?.response?.data?.message || "Invalid email or password.");

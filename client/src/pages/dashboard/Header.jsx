@@ -1,31 +1,26 @@
-import React from "react";
 import { Avatar, AvatarFallback } from "../../components/ui/avatar";
 import { Button } from "../../components/ui/button";
 import { FiLogOut } from "react-icons/fi";
 import { logoutUser } from "../../api/auth";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Header = () => {
-  const token = sessionStorage.getItem("token")
-  const user = JSON.parse(sessionStorage.getItem("user"));
   const navigate = useNavigate();
-
+  const { logout, user, token } = useAuth();
   
   const handleLogout = async () => {
     try {
-      const res = await logoutUser();
-      if (res?.data) {
-        sessionStorage.clear();
-        toast.success("user successfully logged out...");
-      }
-      navigate("/auth/login");
+       await logoutUser(token);
     } catch (error) {
       console.error(error);
     } finally {
-      sessionStorage.clear();
-      toast.success("Logged out successfully.");
-      navigate("/login", { replace: true });
+      logout();
+      toast.success("Logged out successfully.", {
+        position: "top-right",
+      });
+      navigate("/auth/login", { replace: true });
     }
   };
 
@@ -43,9 +38,9 @@ const Header = () => {
         </Avatar>
         <div className="flex flex-col">
           <p className="text-md font-bold text-blue-500 tracking-normal">
-            {user.fullName}
+            {user?.fullName}
           </p>
-          <p className="text-sm font-normal">{user.email}</p>
+          <p className="text-sm font-normal">{user?.email}</p>
         </div>
         <div className="">
           <Button
