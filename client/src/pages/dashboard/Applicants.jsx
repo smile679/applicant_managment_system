@@ -22,8 +22,11 @@ import { HiSortAscending, HiSortDescending } from "react-icons/hi";
 import useDebounce from "../../components/hooks/useDebounce";
 import { getApplicants } from "../../api/applicants";
 import { toast } from "sonner";
+import { Skeleton } from "../../components/ui/skeleton";
+import { BiSolidError } from "react-icons/bi";
+import { Navigate } from "react-router-dom";
 
-// mock rows — matches the real /applicants response shape, swap for real data later
+
 // const MOCK_APPLICANTS = [
 //   {
 //     id: "app_001",
@@ -58,6 +61,7 @@ import { toast } from "sonner";
 // ];
 
 // status → badge color, used inline below instead of a separate Badge component
+
 const STATUS_STYLES = {
   pending: "bg-yellow-100 text-yellow-800",
   shortlisted: "bg-blue-100 text-blue-800",
@@ -74,16 +78,19 @@ const Applicants = () => {
   const [experienceLevel, setExperienceLevel] = useState("");
   const [sortBy, setSortBy] = useState("applicationDate");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [page, setPage] = useState("1");
+  const [limit, setLimit] = useState("10");
 
+  const [meta, setMeta] = useState();
+  const [applicants, setApplicants] = useState();
 
-  const [ meta, setMeta ] = useState();
-  const [ applicants, setApplicants ] = useState();
-
-  const [ isLoading, setIsLoading ] = useState(false);
-  const [ error, setError ] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const debouncedSearch = useDebounce(search);
   const debouncedSearchByCountry = useDebounce(searchByCountry);
+
+  const navigate = Navigate();
 
   const formatDate = (iso) =>
     new Date(iso).toLocaleDateString("en-US", {
@@ -92,58 +99,72 @@ const Applicants = () => {
       day: "numeric",
     });
 
-    // console.log(search, searchByCountry, status, track, experienceLevel, sortBy, sortOrder);
-   useEffect(() => {
-     const fetchApplicants = async () => {
-       const params = {
-         search: debouncedSearch || undefined,
-         country: debouncedSearchByCountry || undefined,
-         status: status || undefined,
-         track: track || undefined,
-         experienceLevel: experienceLevel || undefined,
-         sortBy,
-         sortOrder,
-       };
+  const handleViewButton = ({id}) =>{
+    if(!id){
+      return toast.error("Applicant Not Found!")
+    }
+    return navigate(`/applicants/${id}`)
+  }
 
-        setIsLoading(true)
-        setError(null)
-       try {
-         const res = await getApplicants(params);
-         console.log(res);
-         if(res.status === 200){
-            setApplicants(res.data.data)
-            setMeta(res.data.meta)
-         }
-       } catch (error) {
-         console.log(error);
-         setError(
-           error.response?.data?.message ||
-             "something wrong with fetching the data",
-         );
-         toast.error(
-           error.response?.data?.message ||
-             "something wrong with fetching the data",
-           { position: rightTop },
-         );
-       } finally {
-        setIsLoading(false)
-       }
-     };
+  // console.log(search, searchByCountry, status, track, experienceLevel, sortBy, sortOrder);
+  useEffect(() => {
+    const fetchApplicants = async () => {
+      const params = {
+        page,
+        limit,
+        search: debouncedSearch || undefined,
+        country: debouncedSearchByCountry || undefined,
+        status: status || undefined,
+        track: track || undefined,
+        experienceLevel: experienceLevel || undefined,
+        sortBy,
+        sortOrder,
+      };
 
-     fetchApplicants();
-   }, [
-     debouncedSearch,
-     debouncedSearchByCountry,
-     status,
-     track,
-     experienceLevel,
-     sortBy,
-     sortOrder,
-   ]);
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await getApplicants(params);
+        console.log(res);
+        if (res.status === 200) {
+          setApplicants(res.data.data);
+          setMeta(res.data.meta);
+        }
+      } catch (error) {
+        console.log(error);
+        setError(
+          error.response?.data?.message ||
+            "something wrong with fetching the data",
+        );
+        toast.error(
+          error.response?.data?.message ||
+            "something wrong with fetching the data",
+          { position: "top-right" },
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    console.log(page, limit);
+
+    fetchApplicants();
+  }, [
+    debouncedSearch,
+    debouncedSearchByCountry,
+    status,
+    track,
+    experienceLevel,
+    sortBy,
+    sortOrder,
+    page,
+    limit,
+  ]);
+
 
   return (
     <div className="w-full p-4 md:p-6">
-      <Card>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-xl">Applicants</CardTitle>
           {/* Filter bar */}
@@ -169,7 +190,7 @@ const Applicants = () => {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 mt-4">
+            <div className="max-w-2xl grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 mt-4">
               {/* //status */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="status">Status</Label>
@@ -178,6 +199,7 @@ const Applicants = () => {
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="">All</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="shortlisted">Shortlisted</SelectItem>
                     <SelectItem value="accepted">Accepted</SelectItem>
@@ -193,9 +215,10 @@ const Applicants = () => {
                     <SelectValue placeholder="All tracks" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="">All</SelectItem>
                     <SelectItem value="frontend">Frontend</SelectItem>
                     <SelectItem value="backend">Backend</SelectItem>
-                    <SelectItem value="ui/ux">UI/UX</SelectItem>
+                    <SelectItem value="ui-ux">UI/UX</SelectItem>
                     <SelectItem value="data analytics">
                       Data Analytics
                     </SelectItem>
@@ -215,6 +238,7 @@ const Applicants = () => {
                     <SelectValue placeholder="Any level" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="">All</SelectItem>
                     <SelectItem value="beginner">Beginner</SelectItem>
                     <SelectItem value="intermediate">Intermediate</SelectItem>
                     <SelectItem value="advanced">Advanced</SelectItem>
@@ -260,46 +284,77 @@ const Applicants = () => {
           </div>
         </CardHeader>
 
-        <CardContent>
-          <div className="overflow-x-auto rounded-md border mt-4">
-            <Table>
+        <CardContent className="w-full">
+          <div className="w-full overflow-x-auto rounded-md border mt-4">
+            <Table className="w-full">
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Country</TableHead>
                   <TableHead>Track</TableHead>
-                  <TableHead>Experience</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Applied</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                {applicants && applicants.map((a) => (
-                  <TableRow key={a.id} className="cursor-pointer">
-                    <TableCell className="font-medium">{a.fullName}</TableCell>
-                    <TableCell>{a.email}</TableCell>
-                    <TableCell>{a.country}</TableCell>
-                    <TableCell className="capitalize">{a.track}</TableCell>
-                    <TableCell className="capitalize">
-                      {a.experienceLevel}
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${STATUS_STYLES[a.status]}`}
-                      >
-                        {a.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>{formatDate(a.applicationDate)}</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">
-                        View
-                      </Button>
+              <TableBody className="w-full">
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-50 text-center">
+                      <Skeleton className="w-full h-full" />
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : error ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-32 text-center">
+                      <div className="flex flex-col justify-center items-center p-10">
+                        <BiSolidError className="text-gray-500 size-15" />
+                        <p className="text-md font-medium text-red-300">
+                          {error}
+                        </p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : applicants?.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="h-32 text-center text-muted-foreground"
+                    >
+                      No applicants found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  applicants &&
+                  applicants.map((a) => (
+                    <TableRow key={a.id} className="cursor-pointer">
+                      <TableCell className="font-medium">
+                        {a.fullName}
+                      </TableCell>
+                      <TableCell>{a.email}</TableCell>
+                      <TableCell>{a.country}</TableCell>
+                      <TableCell className="capitalize">{a.track}</TableCell>
+                      <TableCell>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${STATUS_STYLES[a.status]}`}
+                        >
+                          {a.status}
+                        </span>
+                      </TableCell>
+                      <TableCell>{formatDate(a.applicationDate)}</TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleViewButton({ id: a.id })}
+                        >
+                          View
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
@@ -307,13 +362,24 @@ const Applicants = () => {
           {/* Pagination footer */}
           <div className="flex items-center justify-between mt-4">
             <p className="text-sm text-muted-foreground">
-              {`Showing ${meta?.page - meta?.limit} of ${ meta?.total}`}
+              {`Showing ${meta?.page || 1} - ${meta?.limit || 10} of ${meta?.total || 50}`}
             </p>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" disabled>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled
+                onClick={() =>
+                  setPage((prev) => Number(prev) > 0 && Number(prev) - 1)
+                }
+              >
                 Previous
               </Button>
-              <Button variant="outline" size="sm">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((prev) => Number(prev) + 1)}
+              >
                 Next
               </Button>
             </div>

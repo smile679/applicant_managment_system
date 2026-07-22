@@ -24,6 +24,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="applicants" element={<Applicants />} />
+            <Route path="applicants/:id" element={<Applicants />} />
           </Route>
         </Route>
         <Route path="*" element={ <Navigate to="/auth/login" />} />
