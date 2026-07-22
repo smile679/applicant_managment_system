@@ -1,32 +1,29 @@
 import axiosInstance from "../lib/axiosInstance";
 
-export const getApplicants = async(params) => {
-    const response = await axiosInstance.get("/applicants", { params })
+export const getApplicants = async (params) => {
+  const response = await axiosInstance.get("/applicants", { params });
 
-    return response;
+  return response;
 };
 
+export const applicantsDetail = async (id) => {
+  const response = await axiosInstance.get(`/applicants/${id}`);
 
- export const applicantsDetail = async(id) => {
-    
-   const response = await axiosInstance.get(`/applicants/${id}`);
+  return response;
+};
 
-   return response;
- }
-  
+export const updateApplicantStatus = async (id, status) => {
+  const response = await axiosInstance.patch(`/applicants/${id}/status`, {
+    status,
+  });
 
- export const applicantUpdate = async (id, status, notes) => {
-    let response;
+  return response;
+};
 
-    if(status){
-     response = await axiosInstance.patch(`/applicants/${id}/status`, {
-         status,
-       });
-    } else if(note){
-        response = await axiosInstance.patch(`/applicants/${id}/status`, {
-          notes,
-        });
-    }
+export const updateApplicantNote = async (id, notes) => {
+  const response = await axiosInstance.patch(`/applicants/${id}/notes`, {
+    notes,
+  });
 
-   return response;
- };
+  return response;
+};

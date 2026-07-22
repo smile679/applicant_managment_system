@@ -6,6 +6,7 @@ import Applicants from "./pages/dashboard/Applicants";
 import Dashboard from "./pages/dashboard/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
+import ApplicantDetail from "./pages/dashboard/ApplicantDetail";
 
 function App() {
   const { token } = useAuth();
@@ -24,7 +25,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="applicants" element={<Applicants />} />
-            <Route path="applicants/:id" element={<Applicants />} />
+            <Route path="applicants/:id" element={<ApplicantDetail />} />
           </Route>
         </Route>
         <Route path="*" element={ <Navigate to="/auth/login" />} />

@@ -24,7 +24,7 @@ import { getApplicants } from "../../api/applicants";
 import { toast } from "sonner";
 import { Skeleton } from "../../components/ui/skeleton";
 import { BiSolidError } from "react-icons/bi";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 // const MOCK_APPLICANTS = [
@@ -90,7 +90,7 @@ const Applicants = () => {
   const debouncedSearch = useDebounce(search);
   const debouncedSearchByCountry = useDebounce(searchByCountry);
 
-  const navigate = Navigate();
+  const navigate = useNavigate();
 
   const formatDate = (iso) =>
     new Date(iso).toLocaleDateString("en-US", {
@@ -101,9 +101,9 @@ const Applicants = () => {
 
   const handleViewButton = ({id}) =>{
     if(!id){
-      return toast.error("Applicant Not Found!")
+      return toast.error("Applicant Not Found!", { position : 'top-right'})
     }
-    return navigate(`/applicants/${id}`)
+    return navigate(`/dashboard/applicants/${id}`)
   }
 
   // console.log(search, searchByCountry, status, track, experienceLevel, sortBy, sortOrder);
@@ -194,12 +194,18 @@ const Applicants = () => {
               {/* //status */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="status">Status</Label>
-                <Select id="status" value={status} onValueChange={setStatus}>
+                <Select
+                  id="status"
+                  value={status}
+                  onValueChange={(value) =>
+                    setStatus(value === "all" ? "" : value)
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="shortlisted">Shortlisted</SelectItem>
                     <SelectItem value="accepted">Accepted</SelectItem>
@@ -210,16 +216,22 @@ const Applicants = () => {
               {/* //track */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="track">Track</Label>
-                <Select id="track" value={track} onValueChange={setTrack}>
+                <Select
+                  id="track"
+                  value={track}
+                  onValueChange={(value) =>
+                    setTrack(value === "all" ? "" : value)
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="All tracks" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
                     <SelectItem value="frontend">Frontend</SelectItem>
                     <SelectItem value="backend">Backend</SelectItem>
                     <SelectItem value="ui-ux">UI/UX</SelectItem>
-                    <SelectItem value="data analytics">
+                    <SelectItem value="data-analytics">
                       Data Analytics
                     </SelectItem>
                     <SelectItem value="mobile">Mobile</SelectItem>
@@ -232,13 +244,15 @@ const Applicants = () => {
                 <Select
                   id="experience"
                   value={experienceLevel}
-                  onValueChange={setExperienceLevel}
+                  onValueChange={(value) =>
+                    setExperienceLevel(value === "all" ? "" : value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Any level" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
                     <SelectItem value="beginner">Beginner</SelectItem>
                     <SelectItem value="intermediate">Intermediate</SelectItem>
                     <SelectItem value="advanced">Advanced</SelectItem>
