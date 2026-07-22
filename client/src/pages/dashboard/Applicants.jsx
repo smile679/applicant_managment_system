@@ -382,7 +382,7 @@ const Applicants = () => {
               <Button
                 variant="outline"
                 size="sm"
-                disabled
+                // disabled
                 onClick={() =>
                   setPage((prev) => Number(prev) > 0 && Number(prev) - 1)
                 }
