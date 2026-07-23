@@ -376,15 +376,15 @@ const Applicants = () => {
           {/* Pagination footer */}
           <div className="flex items-center justify-between mt-4">
             <p className="text-sm text-muted-foreground">
-              {`Showing ${meta?.page || 1} - ${meta?.limit || 10} of ${meta?.total || 50}`}
+              {`Showing ${meta?.page || 1} - ${meta?.limit || 10} of ${meta?.totalPages || 50}`}
             </p>
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                // disabled
+                disabled={page <= 1}
                 onClick={() =>
-                  setPage((prev) => Number(prev) > 0 && Number(prev) - 1)
+                  setPage((prev) => Number(prev) > 1 && Number(prev) - 1)
                 }
               >
                 Previous
@@ -392,7 +392,12 @@ const Applicants = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPage((prev) => Number(prev) + 1)}
+                disabled={page >= (meta?.totalPages ?? 1)}
+                onClick={() =>
+                  setPage(
+                    (prev) => Number(prev) <= meta?.totalPages && Number(prev) + 1,
+                  )
+                }
               >
                 Next
               </Button>

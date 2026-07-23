@@ -58,6 +58,7 @@ const ApplicantDetail = () => {
     const fetchDetail = async () => {
       setLoading(true);
       setError(null);
+      
       try {
         const res = await applicantsDetail(id);
         setApplicant(res.data);
@@ -70,6 +71,7 @@ const ApplicantDetail = () => {
         toast.error(message, { position: "top-right" });
       } finally {
         setLoading(false);
+        console.log(applicant);
       }
     };
 
@@ -187,7 +189,9 @@ const ApplicantDetail = () => {
               </div>
               <div>
                 <p className="text-muted-foreground">Track</p>
-                <p className="font-medium capitalize">{applicant.track || "—"}</p>
+                <p className="font-medium capitalize">
+                  {applicant.track || "—"}
+                </p>
               </div>
               <div>
                 <p className="text-muted-foreground">Experience Level</p>
@@ -225,7 +229,7 @@ const ApplicantDetail = () => {
                     </a>
                   )}
                   {applicant.githubUrl && (
-                     <a
+                    <a
                       href={applicant.githubUrl}
                       target="_blank"
                       rel="noreferrer"
@@ -257,6 +261,18 @@ const ApplicantDetail = () => {
               <CardContent>
                 <p className="text-sm whitespace-pre-wrap leading-relaxed">
                   {applicant.motivation}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+          {applicant.notes && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Notes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                  {applicant.notes}
                 </p>
               </CardContent>
             </Card>
