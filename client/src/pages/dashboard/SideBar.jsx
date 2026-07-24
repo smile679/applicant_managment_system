@@ -3,7 +3,6 @@ import { MdBiotech } from "react-icons/md";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import { HiOutlineViewGrid, HiOutlineUsers } from "react-icons/hi";
 import { Button } from "../../components/ui/button";
-// import { Button } from "../ui/button";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: HiOutlineViewGrid, end: true },
