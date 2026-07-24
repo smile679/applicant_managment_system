@@ -5,7 +5,7 @@ practical challenge. Lets an administrator log in, browse and filter internship
 applicants, view full applicant details, update application status, leave internal
 notes, and see summary statistics — all against the provided REST API.
 
-**Live app:** [DEPLOYED_URL](https://applicant-managment-system.vercel.app/dashboard)
+**Live app:** [DEPLOYED_URL](https://applicant-managment-system.vercel.app)
 **Repository:** [GITHUB_URL](https://github.com/smile679/applicant_managment_system.git)
 
 ---
