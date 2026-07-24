@@ -1,39 +1,29 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "../../pages/dashboard/Header";
-import { MdBiotech } from "react-icons/md";
-import { Card, CardContent, CardHeader } from "../ui/card";
-
+import Sidebar from "../../pages/dashboard/SideBar";
 
 const DashboardLayout = () => {
-  // const user = JSON.parse(sessionStorage.getItem("user"))
-  return (
-    <section className="w-full">
-      <div className="w-full flex">
-        {/* <aside className="w-full min-h-screen max-w-64">
-          <Card className="">
-            <CardHeader>
-              <div className="w-full flex justify-center items-center py-5 border-b-2">
-                <MdBiotech className="size-15 text-blue-500" />
-                <div className="flex flex-col">
-                  <h1 className="text-lg font-bold">APPLICANT</h1>
-                  <h3 className="text-sm tracking-widest leading-tight">
-                    Managment
-                  </h3>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-            </CardContent>
-          </Card>
-        </aside> */}
-        <div className="w-full">
-          <Header />
+  return (
+    <div className="w-full min-h-screen flex bg-muted/30">
+      <Sidebar
+        collapsed={collapsed}
+        onToggle={() => setCollapsed((prev) => !prev)}
+        mobileOpen={mobileOpen}
+        onCloseMobile={() => setMobileOpen(false)}
+      />
+
+      <div className="flex-1 min-w-0 flex flex-col">
+        <Header onMenuClick={() => setMobileOpen(true)} />
+        <main className="flex-1">
           <Outlet />
-        </div>
+        </main>
       </div>
-    </section>
+    </div>
   );
-}
+};
 
 export default DashboardLayout;

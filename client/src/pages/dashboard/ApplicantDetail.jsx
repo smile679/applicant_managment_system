@@ -71,7 +71,6 @@ const ApplicantDetail = () => {
         toast.error(message, { position: "top-right" });
       } finally {
         setLoading(false);
-        console.log(applicant);
       }
     };
 
